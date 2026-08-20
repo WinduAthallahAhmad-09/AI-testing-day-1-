@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <script src="/js/auth-guard.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 Kendaraan - Motorku Tercinta</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-gray-100 min-h-screen text-gray-800">
+    <!-- Navigation Bar -->
+    <nav class="sticky top-0 w-full z-50 bg-white/80 backdrop-blur-lg border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/" class="flex items-center gap-2 text-xl font-bold text-blue-600 transition-smooth">
+                        <span>🔧 Motorku Tercinta</span>
+                    </a>
+                </div>
+                <!-- Desktop Menu -->
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="/index.html" class="text-gray-600 hover:bg-gray-100 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-smooth">Dashboard</a>
+                        <a href="/vehicles.html" class="bg-blue-50 text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-smooth">Kendaraan</a>
+                    </div>
+                </div>
+                <div class="hidden md:flex items-center bg-gray-50/80 px-3 py-1.5 rounded-full shadow-sm border border-gray-100 ml-auto mr-4 text-gray-800">
+                    <span id="user-greeting" class="text-sm font-medium text-gray-700 mr-4"></span>
+                    <button onclick="logout()" class="text-sm text-red-600 hover:text-red-800 font-medium flex items-center transition-smooth"><i data-lucide="log-out" class="h-4 w-4 mr-1"></i>Keluar</button>
+                </div>
+                <!-- Mobile menu button -->
+                <div class="-mr-2 flex md:hidden">
+                    <button type="button" id="mobile-menu-btn" class="inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-blue-600 hover:bg-gray-100 focus:outline-none transition-smooth">
+                        <i data-lucide="menu"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div class="md:hidden hidden bg-white border-t border-gray-100 shadow-lg" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="/index.html" class="text-gray-600 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Dashboard</a>
+                <a href="/vehicles.html" class="bg-blue-50 text-blue-600 block px-3 py-2 rounded-md text-base font-medium">Kendaraan</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12 animate-fade-in-up">
+        <!-- Page Header -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+            <h1 class="text-2xl font-bold text-gray-900">Kendaraan Saya</h1>
+            <button onclick="openAddModal()" class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-4 py-2 rounded-xl font-medium transition-all duration-300 shadow-lg shadow-blue-500/30 transform hover:-translate-y-0.5">
+                <i data-lucide="plus" class="w-5 h-5"></i>
+                Tambah Kendaraan
+            </button>
+        </div>
+
+        <!-- Filter/Search Bar -->
+        <div class="bg-white p-4 rounded-2xl shadow-lg shadow-gray-200/50 border border-gray-50 mb-8 flex items-center transition-smooth">
+            <i data-lucide="search" class="text-gray-400 w-5 h-5 mr-3"></i>
+            <input type="text" id="search-input" placeholder="Cari berdasarkan nama atau plat nomor..." class="flex-1 border-none outline-none focus:ring-0 text-sm w-full bg-transparent">
+        </div>
+
+        <!-- Vehicle Grid -->
+        <div id="vehicles-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 hidden">
+            <!-- Rendered via JS -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="empty-state" class="hidden flex flex-col items-center justify-center bg-white p-12 rounded-2xl border border-gray-50 shadow-lg shadow-gray-200/50 text-center transition-smooth">
+            <div class="text-6xl mb-4">🚘</div>
+            <h3 class="text-xl font-bold text-gray-800 mb-2">Belum ada kendaraan</h3>
+            <p class="text-gray-500 mb-6 max-w-md">Tambahkan kendaraan pertama Anda untuk mulai mencatat servis dan mendapatkan pengingat perawatan.</p>
+            <button onclick="openAddModal()" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-2.5 rounded-xl font-medium transition-all duration-300 shadow-lg shadow-blue-500/30 flex items-center gap-2 transform hover:-translate-y-0.5">
+                <i data-lucide="plus" class="w-5 h-5"></i>
+                Tambah Kendaraan Pertama
+            </button>
+        </div>
+    </main>
+
+    <!-- Add/Edit Vehicle Modal -->
+    <div id="vehicle-modal" class="fixed inset-0 z-[100] hidden">
+        <!-- Overlay -->
+        <div class="absolute inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity" onclick="closeModal('vehicle-modal')"></div>
+        
+        <!-- Modal Content -->
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
+            <div class="relative bg-white rounded-3xl text-left overflow-hidden shadow-2xl transform scale-95 transition-transform animate-fade-in-up sm:my-8 sm:max-w-lg w-full z-10">
+                <form id="vehicle-form" onsubmit="handleSubmit(event)">
+                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                        <div class="flex justify-between items-center mb-5 border-b border-gray-100 pb-4">
+                            <h3 class="text-lg leading-6 font-bold text-gray-900" id="modal-title">Tambah Kendaraan</h3>
+                            <button type="button" onclick="closeModal('vehicle-modal')" class="text-gray-400 hover:text-gray-600 transition-colors">
+                                <i data-lucide="x" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Nama Kendaraan *</label>
+                                <input type="text" id="name" name="name" required placeholder="Honda Beat" class="w-full border-gray-300 rounded-xl shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm px-3 py-2.5 border outline-none transition-smooth">
+                            </div>
+                            
+                            <div>
+                                <label for="type" class="block text-sm font-medium text-gray-700 mb-1">Tipe *</label>
+                                <select id="type" name="type" required class="w-full border-gray-300 rounded-xl shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm px-3 py-2.5 border bg-white outline-none transition-smooth">
+                                    <option value="motor">Motor</option>
+                                    <option value="mobil">Mobil</option>
+                                </select>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label for="plate_number" class="block text-sm font-medium text-gray-700 mb-1">Plat Nomor</label>
+                                    <input type="text" id="plate_number" name="plate_number" placeholder="B 1234 ABC" class="w-full border-gray-300 rounded-xl shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm px-3 py-2.5 border uppercase outline-none transition-smooth">
+                                </div>
+                                <div>
+                                    <label for="year" class="block text-sm font-medium text-gray-700 mb-1">Tahun</label>
+                                    <input type="number" id="year" name="year" placeholder="2022" class="w-full border-gray-300 rounded-xl shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm px-3 py-2.5 border outline-none transition-smooth">
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label for="current_km" class="block text-sm font-medium text-gray-700 mb-1">Odometer Saat Ini (KM)</label>
+                                <input type="number" id="current_km" name="current_km" placeholder="15000" class="w-full border-gray-300 rounded-xl shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm px-3 py-2.5 border outline-none transition-smooth">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 px-4 py-4 sm:px-6 sm:flex sm:flex-row-reverse rounded-b-3xl border-t border-gray-100">
+                        <button type="submit" class="w-full inline-flex justify-center rounded-xl border border-transparent shadow-md px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-base font-medium text-white hover:from-blue-700 hover:to-indigo-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm transition-all duration-300 transform hover:-translate-y-0.5">
+                            Simpan
+                        </button>
+                        <button type="button" onclick="closeModal('vehicle-modal')" class="mt-3 w-full inline-flex justify-center rounded-xl border border-gray-300 shadow-sm px-4 py-2.5 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition-smooth">
+                            Batal
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- Scripts -->
+    <script src="/js/app.js"></script>
+    <script src="/js/vehicles.js"></script>
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+        
+        // Mobile Menu Toggle
+        document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        });
+    </script>
+</body>
+</html>

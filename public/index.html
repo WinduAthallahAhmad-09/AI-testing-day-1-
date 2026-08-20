@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <script src="/js/auth-guard.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 Perawatan Kendaraan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-gray-100 min-h-screen pb-20 text-gray-800">
+    <!-- Navigation Bar -->
+    <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <a href="index.html" class="flex-shrink-0 flex items-center text-blue-600 font-bold text-xl gap-2 transition-smooth">
+                        <i data-lucide="wrench"></i> Motorku Tercinta
+                    </a>
+                    <div class="hidden md:block">
+                        <div class="ml-10 flex items-baseline space-x-4">
+                            <a href="index.html" class="bg-blue-50 text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-smooth">Dashboard</a>
+                            <a href="vehicles.html" class="text-gray-600 hover:bg-gray-100 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-smooth">Kendaraan</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="hidden md:flex items-center bg-gray-50/80 px-3 py-1.5 rounded-full shadow-sm border border-gray-100">
+                    <span id="user-greeting" class="text-sm font-medium text-gray-700 mr-4"></span>
+                    <button onclick="logout()" class="text-sm text-red-600 hover:text-red-800 font-medium flex items-center transition-smooth"><i data-lucide="log-out" class="h-4 w-4 mr-1"></i>Keluar</button>
+                </div>
+                <div class="-mr-2 flex md:hidden">
+                    <button type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-blue-600 hover:bg-gray-100 focus:outline-none transition-smooth" aria-controls="mobile-menu" aria-expanded="false" id="mobile-menu-btn">
+                        <span class="sr-only">Buka menu</span>
+                        <i data-lucide="menu"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="md:hidden hidden bg-white border-t border-gray-100 shadow-lg" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="index.html" class="bg-blue-50 text-blue-600 block px-3 py-2 rounded-md text-base font-medium">Dashboard</a>
+                <a href="vehicles.html" class="text-gray-600 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Kendaraan</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12 animate-fade-in-up">
+        <!-- Stats Section -->
+        <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+            <div class="bg-white rounded-2xl shadow-lg shadow-gray-200/50 border border-gray-50 hover:-translate-y-1 hover:shadow-xl transition-all duration-300">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-3 shadow-sm">
+                            <i data-lucide="car" class="h-6 w-6 text-white"></i>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">Total Kendaraan</dt>
+                                <dd class="text-lg font-bold text-gray-900" id="stat-total-vehicles">0</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-2xl shadow-lg shadow-gray-200/50 border border-gray-50 hover:-translate-y-1 hover:shadow-xl transition-all duration-300">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 bg-gradient-to-br from-red-500 to-red-600 rounded-xl p-3 shadow-sm">
+                            <i data-lucide="alert-triangle" class="h-6 w-6 text-white"></i>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">Perlu Perawatan</dt>
+                                <dd class="text-lg font-bold text-gray-900" id="stat-overdue">0</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-2xl shadow-lg shadow-gray-200/50 border border-gray-50 hover:-translate-y-1 hover:shadow-xl transition-all duration-300">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-3 shadow-sm">
+                            <i data-lucide="calendar-check" class="h-6 w-6 text-white"></i>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">Perawatan Bulan Ini</dt>
+                                <dd class="text-lg font-bold text-gray-900" id="stat-month-count">0</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-2xl shadow-lg shadow-gray-200/50 border border-gray-50 hover:-translate-y-1 hover:shadow-xl transition-all duration-300">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-3 shadow-sm">
+                            <i data-lucide="dollar-sign" class="h-6 w-6 text-white"></i>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">Total Biaya Bulan Ini</dt>
+                                <dd class="text-lg font-bold text-gray-900" id="stat-month-cost">Rp 0</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alert Section -->
+        <div class="bg-white rounded-2xl shadow-lg shadow-gray-200/50 border border-gray-50 hover:shadow-xl transition-all duration-300 mb-8 overflow-hidden">
+            <div class="px-4 py-5 border-b border-gray-100 sm:px-6 flex justify-between items-center cursor-pointer transition-colors hover:bg-gray-50/50" id="alert-header">
+                <h3 class="text-lg leading-6 font-semibold text-gray-900 flex items-center gap-2">
+                    <i data-lucide="bell" class="text-red-500"></i> Pengingat Perawatan
+                </h3>
+                <i data-lucide="chevron-down" class="text-gray-400 transition-transform duration-300" id="alert-chevron"></i>
+            </div>
+            <div class="px-4 py-5 sm:p-6" id="alert-content">
+                <div id="alert-container" class="space-y-4">
+                    <div class="text-center text-gray-500 py-4" id="alert-empty-state">
+                        Semua perawatan dalam kondisi baik! ✅
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vehicles Overview -->
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl leading-6 font-semibold text-gray-900">Ringkasan Kendaraan</h3>
+        </div>
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3" id="vehicles-container">
+            <!-- Add Vehicle Card -->
+            <a href="vehicles.html" id="add-vehicle-card" class="flex flex-col items-center justify-center bg-white border-2 border-dashed border-gray-300 rounded-2xl p-6 hover:-translate-y-1 hover:shadow-xl hover:border-blue-400 transition-all duration-300 cursor-pointer min-h-[300px] shadow-lg shadow-gray-200/50">
+                <i data-lucide="plus-circle" class="h-12 w-12 text-gray-400 mb-3 transition-colors"></i>
+                <span class="text-gray-600 font-medium">Tambah Kendaraan</span>
+            </a>
+        </div>
+    </main>
+
+    <!-- Quick Action FAB -->
+    <button onclick="openQuickAction()" class="fixed bottom-8 right-8 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-full p-4 shadow-xl shadow-blue-500/30 transition-all duration-300 transform hover:-translate-y-1 z-40 flex items-center gap-2 group">
+        <i data-lucide="plus"></i>
+        <span class="hidden group-hover:inline-block font-medium pr-2 transition-all">Catat Perawatan</span>
+    </button>
+
+    <!-- Modal Quick Action -->
+    <div id="quick-action-modal" class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4 transition-opacity">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto transform scale-95 transition-transform animate-fade-in-up">
+            <div class="px-6 py-5 flex justify-between items-center border-b border-gray-100 sticky top-0 bg-white z-10 rounded-t-3xl">
+                <h3 class="text-lg leading-6 font-semibold text-gray-900">Catat Perawatan</h3>
+                <button type="button" class="text-gray-400 hover:text-gray-600 transition-colors" onclick="closeModal('quick-action-modal')">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <form id="quick-maintenance-form" class="p-6 space-y-4">
+                <div>
+                    <label for="vehicle_id" class="block text-sm font-medium text-gray-700">Kendaraan</label>
+                    <select id="vehicle_id" name="vehicle_id" required class="mt-1 block w-full pl-3 pr-10 py-2.5 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-xl border transition-smooth">
+                        <option value="">Pilih Kendaraan</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="type_id" class="block text-sm font-medium text-gray-700">Jenis Perawatan</label>
+                    <select id="type_id" name="type_id" required class="mt-1 block w-full pl-3 pr-10 py-2.5 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-xl border transition-smooth" disabled>
+                        <option value="">Pilih Jenis (Pilih kendaraan dulu)</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="date" class="block text-sm font-medium text-gray-700">Tanggal</label>
+                        <input type="date" name="date" id="date" required class="mt-1 block w-full border border-gray-300 rounded-xl shadow-sm py-2.5 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-smooth">
+                    </div>
+                    <div>
+                        <label for="odometer" class="block text-sm font-medium text-gray-700">Odometer (KM)</label>
+                        <input type="number" name="odometer" id="odometer" required min="0" class="mt-1 block w-full border border-gray-300 rounded-xl shadow-sm py-2.5 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-smooth">
+                    </div>
+                </div>
+                <div>
+                    <label for="workshop" class="block text-sm font-medium text-gray-700">Bengkel</label>
+                    <input type="text" name="workshop" id="workshop" class="mt-1 block w-full border border-gray-300 rounded-xl shadow-sm py-2.5 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-smooth">
+                </div>
+                <div>
+                    <label for="cost" class="block text-sm font-medium text-gray-700">Biaya (Rp)</label>
+                    <input type="number" name="cost" id="cost" min="0" required class="mt-1 block w-full border border-gray-300 rounded-xl shadow-sm py-2.5 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-smooth">
+                </div>
+                <div>
+                    <label for="parts_replaced" class="block text-sm font-medium text-gray-700">Suku Cadang Diganti (Pisahkan koma)</label>
+                    <input type="text" name="parts_replaced" id="parts_replaced" placeholder="Contoh: Oli Mesin, Filter Oli" class="mt-1 block w-full border border-gray-300 rounded-xl shadow-sm py-2.5 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-smooth">
+                </div>
+                <div>
+                    <label for="notes" class="block text-sm font-medium text-gray-700">Catatan Tambahan</label>
+                    <textarea id="notes" name="notes" rows="3" class="mt-1 block w-full border border-gray-300 rounded-xl shadow-sm py-2.5 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-smooth"></textarea>
+                </div>
+                <div class="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense pt-4">
+                    <button type="submit" class="w-full inline-flex justify-center rounded-xl border border-transparent shadow-md px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-base font-medium text-white hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:col-start-2 sm:text-sm transition-all duration-300">
+                        Simpan
+                    </button>
+                    <button type="button" onclick="closeModal('quick-action-modal')" class="mt-3 w-full inline-flex justify-center rounded-xl border border-gray-300 shadow-sm px-4 py-2.5 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:col-start-1 sm:text-sm transition-smooth">
+                        Batal
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed top-20 right-4 z-50 flex flex-col gap-2"></div>
+
+    <script src="/js/app.js"></script>
+    <script src="/js/dashboard.js"></script>
+    <script>
+        // Initialize lucide icons for elements already in DOM
+        lucide.createIcons();
+        
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        });
+        
+        // Alert section collapse toggle
+        document.getElementById('alert-header').addEventListener('click', function() {
+            const content = document.getElementById('alert-content');
+            const chevron = document.getElementById('alert-chevron');
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                chevron.style.transform = 'rotate(0deg)';
+            } else {
+                content.classList.add('hidden');
+                chevron.style.transform = 'rotate(-180deg)';
+            }
+        });
+    </script>
+</body>
+</html>
